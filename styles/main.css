@@ -95,3 +95,7 @@ body {
   margin: 0 auto; /* horizontal margin value centers it */
   max-width: 64rem; /* sets the max size the container will stretch to */
 }
+
+.container.narrow {
+  max-width: 56rem;
+}

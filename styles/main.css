@@ -99,3 +99,8 @@ body {
 .container.narrow {
   max-width: 56rem;
 }
+
+.table {
+  margin: 20px;
+  width: 100%;
+}

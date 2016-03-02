@@ -74,31 +74,54 @@ var trackIndex = function(album, song){
   return album.songs.indexOf(song);
 }
 
-var nextSong = function(){
+// var nextSong = function(){
+//   //store previous song number
+//   var previousSongNumber = currentlyPlayingSongNumber;
+//   var previousSongIndex = trackIndex(currentAlbum, currentSongFromAlbum);
+//   var nextSongIndex = previousSongIndex == currentAlbum.songs.length - 1 ? 0 : previousSongIndex + 1;
+//
+//   //set current song playing number
+//   setSong(previousSongNumber == currentAlbum.songs.length ? 1 : previousSongNumber + 1);
+//
+//   //update playerbar
+//   updatePlayerBar();
+//
+//   //update previous song's number cell with it's number
+//   getSongNumberCell(previousSongNumber).text(previousSongNumber)
+// };
+//
+// var previousSong = function(){
+//   //store previous song number
+//   var previousSongNumber = currentlyPlayingSongNumber;
+//   var previousSongIndex = trackIndex(currentAlbum, currentSongFromAlbum);
+//   var nextSongIndex = previousSongIndex == 0 ? currentAlbum.songs.length - 1 : previousSongIndex - 1;
+//
+//   //set current song playing
+//   setSong(previousSongNumber == 1 ? currentAlbum.songs.length : previousSongNumber - 1);
+//
+//   //update playerbar
+//   updatePlayerBar();
+//
+//   //update previous song's number cell with it's number
+//   getSongNumberCell(previousSongNumber).text(previousSongNumber);
+// };
+
+var skip = function(direction){
   //store previous song number
   var previousSongNumber = currentlyPlayingSongNumber;
   var previousSongIndex = trackIndex(currentAlbum, currentSongFromAlbum);
-  var nextSongIndex = previousSongIndex == currentAlbum.songs.length - 1 ? 0 : previousSongIndex + 1;
+  var nextSongIndex;
+  if(direction == "back"){
+    nextSongIndex = previousSongIndex == 0 ? currentAlbum.songs.length - 1 : previousSongIndex - 1;
 
-  //set current song playing number
-  setSong(previousSongNumber == currentAlbum.songs.length ? 1 : previousSongNumber + 1);
+    //set current song playing
+    setSong(previousSongNumber == 1 ? currentAlbum.songs.length : previousSongNumber - 1);
+  } else {
+    nextSongIndex = previousSongIndex == currentAlbum.songs.length - 1 ? 0 : previousSongIndex + 1;
 
-  //update playerbar
-  updatePlayerBar();
-
-  //update previous song's number cell with it's number
-  getSongNumberCell(previousSongNumber).text(previousSongNumber)
-};
-
-var previousSong = function(){
-  //store previous song number
-  var previousSongNumber = currentlyPlayingSongNumber;
-  var previousSongIndex = trackIndex(currentAlbum, currentSongFromAlbum);
-  var nextSongIndex = previousSongIndex == 0 ? currentAlbum.songs.length - 1 : previousSongIndex - 1;
-
-  //set current song playing
-  setSong(previousSongNumber == 1 ? currentAlbum.songs.length : previousSongNumber - 1);
-
+    //set current song playing number
+    setSong(previousSongNumber == currentAlbum.songs.length ? 1 : previousSongNumber + 1);
+  }
   //update playerbar
   updatePlayerBar();
 
@@ -122,10 +145,12 @@ var getSongNumberCell = function(number){
 };
 
 var updatePlayerBar = function(){
-  $('.currently-playing .song-name').text(currentSongFromAlbum.title);
-  $('.currently-playing .artist-song-mobile').text(currentSongFromAlbum.title + " - " + currentAlbum.artist)
-  $('.currently-playing .artist-name').text(currentAlbum.artist);
-  $('.main-controls .play-pause').html(playerBarPauseButton);
+  if(currentSongFromAlbum){
+    $('.currently-playing .song-name').text(currentSongFromAlbum.title);
+    $('.currently-playing .artist-song-mobile').text(currentSongFromAlbum.title + " - " + currentAlbum.artist)
+    $('.currently-playing .artist-name').text(currentAlbum.artist);
+    $('.main-controls .play-pause').html(playerBarPauseButton);
+  }
 };
 
 // Album button templates
@@ -147,8 +172,12 @@ var $nextButton = $('.main-controls .next');
 $(document).ready(function(){
   var albums = [albumBlink, albumPicasso, albumMarconi]
   setCurrentAlbum(albums[0]);
-  $previousButton.click(previousSong);
-  $nextButton.click(nextSong)
+  $previousButton.click(function(){
+    skip('back');
+  });
+  $nextButton.click(function(){
+    skip('forward');
+  });
 
   //toggle between albums
   // var cover = document.getElementsByClassName('album-cover-art')[0];

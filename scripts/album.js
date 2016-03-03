@@ -152,6 +152,31 @@ var updatePlayerBar = function(){
   $('.main-controls .play-pause').html(playerBarPauseButton);
 };
 
+var togglePlayFromPlayerBar = function(){
+  //grab currently playing number cell, if any
+  var $currentlyPlayingCell = getSongNumberCell(currentlyPlayingSongNumber);
+  var $playerBarPlayPauseButton = $('.main-controls .play-pause');
+  //if currentlyPlayingCell is null, no song is playing, play first song
+  if(currentSoundFile == null){
+    setSong(1);
+    $playerBarPlayPauseButton.html(playerBarPauseButton);
+  } else { //if there is a currentSoundFile,
+    //  if it's paused, play currentSoundFile, render pauseButtonTemplate
+    //  in currentlyPlayingCell and playerBarPauseButton
+    if(currentSoundFile.isPaused()){
+      currentSoundFile.play();
+      $playerBarPlayPauseButton.html(playerBarPauseButton);
+      $currentlyPlayingCell.html(pauseButtonTemplate);
+    } else {
+      //  else, pause currentSoundFile and render play buttons, render playButtonTemplate in currentlyPlayingCell
+      currentSoundFile.pause();
+      $playerBarPlayPauseButton.html(playerBarPlayButton);
+      $currentlyPlayingCell.html(playButtonTemplate);
+    }
+  }
+
+};
+
 // Album button templates
 var playButtonTemplate = '<a class="album-song-button"><span class="ion-play"></span></a>';
 var pauseButtonTemplate = '<a class="album-song-button"><span class="ion-pause"></span></a>';
@@ -169,12 +194,14 @@ var currentVolume = 80;
 
 var $previousButton = $('.main-controls .previous');
 var $nextButton = $('.main-controls .next');
+var $playPauseButton = $('.main-controls .play-pause');
 
 $(document).ready(function(){
   var albums = [albumBlink, albumPicasso, albumMarconi]
   setCurrentAlbum(albums[1]);
   $previousButton.click(previousSong);
-  $nextButton.click(nextSong)
+  $nextButton.click(nextSong);
+  $playPauseButton.click(togglePlayFromPlayerBar);
 
   //toggle between albums
   // var cover = document.getElementsByClassName('album-cover-art')[0];

@@ -4,10 +4,9 @@ var createSongRow = function(songNumber, songName, songLength){
     '<tr class="album-view-song-item">'
   + '  <td class="song-item-number" data-song-number="'+ songNumber +'">' + songNumber + '</td>'
   + '  <td class="song-item-title">' + songName + '</td>'
-  + '  <td class="song-item-duration">' + songLength + '</td>'
+  + '  <td class="song-item-duration">' + filterTimeCode(songLength) + '</td>'
   + '</tr>'
   ;
-
   var $row = $(template);
 
   var clickHandler = function() {
@@ -157,8 +156,29 @@ var updatePlayerBar = function(){
   $('.currently-playing .artist-song-mobile').text(currentSongFromAlbum.title + " - " + currentAlbum.artist)
   $('.currently-playing .artist-name').text(currentAlbum.artist);
   $('.main-controls .play-pause').html(playerBarPauseButton);
+  setTotalTimeInPlayerBar(currentSongFromAlbum.duration);
 };
 
+var filterTimeCode = function(timeInSeconds){
+  var num = Math.floor(parseFloat(timeInSeconds));
+  var minutes = 0;
+  var seconds = 0;
+
+  while(num >= 60){
+
+    num = num - 60;
+    minutes = minutes + 1;
+  }
+
+  seconds = num;
+  var result = minutes + ":";
+  if (seconds <= 9){
+    result += "0" + seconds;
+  } else {
+    result += seconds;
+  }
+  return result;
+};
 var togglePlayFromPlayerBar = function(){
   //grab currently playing number cell, if any
   var $currentlyPlayingCell = getSongNumberCell(currentlyPlayingSongNumber);
@@ -184,12 +204,21 @@ var togglePlayFromPlayerBar = function(){
 
 };
 
+var setCurrentTimeInPlayerBar = function(currentTime){
+  $('.current-time').text(filterTimeCode(currentTime));
+};
+
+var setTotalTimeInPlayerBar = function(totalTime){
+  $('.total-time').text(filterTimeCode(currentSongFromAlbum.duration));
+};
+
 var updateSeekBarWhileSongPlays = function(){
   if(currentSoundFile){
     currentSoundFile.bind('timeupdate', function(e){
       var seekBarFillRatio = this.getTime() / this.getDuration();
       var $seekBar = $('.seek-control .seek-bar');
       updateSeekPercentage($seekBar, seekBarFillRatio);
+      setCurrentTimeInPlayerBar(this.getTime());
     });
   }
 };
@@ -249,7 +278,6 @@ var setupSeekBars = function(){
 };
 
 var seek = function(time){
-  console.log(time);
   if(currentSoundFile){
     currentSoundFile.setTime(time);
   }
